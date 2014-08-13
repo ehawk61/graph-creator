@@ -97,7 +97,7 @@ public class GraphCreatorActivity extends Activity {
 
 	public void onDownload(View v){
     	String urlAddress= ((TextView)findViewById(R.id.url)).getText().toString();
-    	if(urlAddress =="")
+    	if(urlAddress.equals(""))
     	{
     		Toast.makeText(getApplicationContext(),"URL is blank", Toast.LENGTH_LONG).show();
     	}
