@@ -14,11 +14,10 @@
     You should have received a copy of the GNU General Public License
     along with GraphCreator.  If not, see <http://www.gnu.org/licenses/>.
     
-    Copyright (C) 2012 Jonathan L. Meek
+    Copyright (C) 2012-2014 Jonathan L. Meek
  */
 
 package graphcreator.android;
-
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -28,7 +27,6 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Scanner;
-
 
 
 import android.app.Activity;
@@ -47,12 +45,10 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 
-
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.*;
-
 
 public class GraphCreatorActivity extends Activity {
     /** Called when the activity is first created. */
@@ -63,7 +59,7 @@ public class GraphCreatorActivity extends Activity {
 	static String [] headerItems;
 	String tableHeaderSpilt;
 	static final String dbName ="data";
-	Database database = new Database(this);
+	Database database = new Database(this, dbName);
 	static SQLiteDatabase db;
 
 	
@@ -73,12 +69,10 @@ public class GraphCreatorActivity extends Activity {
         setContentView(R.layout.main);
         mgr =(DownloadManager)getSystemService(DOWNLOAD_SERVICE);
         registerReceiver(onComplete, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
-       
         addListenerOnButton();
     }//end onCreate
     
     public void addListenerOnButton() {
-    		 
     	final Context context = this;    
     	Button button = (Button) findViewById(R.id.swtichScreenButton);
     	
@@ -86,17 +80,14 @@ public class GraphCreatorActivity extends Activity {
     		public void onClick(View arg0) {     
     			Intent intent = new Intent(context, webViewActivity.class);
     			startActivity(intent);   
-     
     		}
      
     	});
-     
-   	}//end addListenerOnButton
-		
-	
+	}//end addListenerOnButton
 
 	public void onDownload(View v){
-    	String urlAddress= ((TextView)findViewById(R.id.url)).getText().toString();
+		TextView urlObject = ((TextView)findViewById(R.id.url));
+    	String urlAddress = urlObject.getText().toString();
     	if(urlAddress.equals(""))
     	{
     		Toast.makeText(getApplicationContext(),"URL is blank", Toast.LENGTH_LONG).show();
@@ -115,7 +106,16 @@ public class GraphCreatorActivity extends Activity {
     		lastDownload = mgr.enqueue(test);
     	}
     }//end onDownload
-    
+	
+    private DownloadManager.Request startDownload(Uri url){
+		Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).mkdirs();
+		DownloadManager.Request test = new DownloadManager.Request(url);
+		test.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI | DownloadManager.Request.NETWORK_MOBILE);
+		test.setAllowedOverRoaming(false);
+		
+		return test;
+	}//end startDownload
+	
     public void displayText(View v){
     	TextView text = ((TextView)findViewById(R.id.downloadDisplay));
     	Cursor c = mgr.query(new DownloadManager.Query().setFilterById(lastDownload));
@@ -125,7 +125,8 @@ public class GraphCreatorActivity extends Activity {
     	try{
     		in = new FileInputStream(fileNameString);
     	}catch(FileNotFoundException e){
-    		e.printStackTrace();
+			String stackTrace = Log.getStackTraceString(e);
+    		Toast.makeText(getApplicationContext(),stackTrace,Toast.LENGTH_LONG).show();
     	}
     	
     	Thread t = new Thread(new Runnable(){
@@ -161,9 +162,8 @@ public class GraphCreatorActivity extends Activity {
 			e.printStackTrace();
 		}
 		
-		text.setText(tableHeaderSpilt);
-		
-   }//end displayText
+		text.setText(tableHeaderSpilt);		
+   	}//end displayText
     
     public void addData(View v){
     	final TextView downloadDisplay = (TextView)findViewById(R.id.downloadDisplay);    	
@@ -223,26 +223,7 @@ public class GraphCreatorActivity extends Activity {
     }//end Add Data method
     
       
-    public class Database extends SQLiteOpenHelper{  	
-    	    	
-    	public Database(Context context){
-    		super(context,dbName,null,1);
-    	}
-    	
-    	@Override
-    	public void onCreate(SQLiteDatabase db){
-    		db.execSQL(tableHeaderSpilt);
-    	}
-    	
-    	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion){
-    		
-    	}
-    	
-    	public void dropTable(SQLiteDatabase db){
-    		db.execSQL("DROP TABLE "+dbName+"IF EXISTS");
-    	}    	  		
-    	
-    }//end Database class 
+    
     
     BroadcastReceiver onComplete=new BroadcastReceiver() {
         public void onReceive(Context ctxt, Intent intent) {

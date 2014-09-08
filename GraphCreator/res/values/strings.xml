@@ -23,7 +23,7 @@
     <string name="urlTitle">URI</string>
     <string name="buttonText">Download Item</string>
 	<string name="statusTitle">Status Output</string>
-	<string name="createTableSQL">Display Create table SQL statement</string>
+	<string name="createTableSQL">Display Create Table SQL statement</string>
 	<string name="addData">Add Data to Database</string>
 	<string name="graphSetup">Go to Graph Setup</string>
 	<string name="graphType">Graph Type</string>
