@@ -77,6 +77,6 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:text="@string/graphSetup"
-        android:onClick=""
+        android:onClick="addListenerOnButton"
         android:paddingBottom="10dip"  />
 </LinearLayout>

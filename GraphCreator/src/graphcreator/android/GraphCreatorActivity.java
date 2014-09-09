@@ -107,122 +107,118 @@ public class GraphCreatorActivity extends Activity {
     	}
     }//end onDownload
 	
-    private DownloadManager.Request startDownload(Uri url){
-		Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).mkdirs();
-		DownloadManager.Request test = new DownloadManager.Request(url);
-		test.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI | DownloadManager.Request.NETWORK_MOBILE);
-		test.setAllowedOverRoaming(false);
-		
-		return test;
-	}//end startDownload
-	
     public void displayText(View v){
     	TextView text = ((TextView)findViewById(R.id.downloadDisplay));
     	Cursor c = mgr.query(new DownloadManager.Query().setFilterById(lastDownload));
-    	c.moveToFirst();
-    	String fileNameString =	c.getString(c.getColumnIndex(DownloadManager.COLUMN_LOCAL_FILENAME));
-    	    	
-    	try{
-    		in = new FileInputStream(fileNameString);
-    	}catch(FileNotFoundException e){
-			String stackTrace = Log.getStackTraceString(e);
-    		Toast.makeText(getApplicationContext(),stackTrace,Toast.LENGTH_LONG).show();
-    	}
-    	
-    	Thread t = new Thread(new Runnable(){
-    		public void run(){
-    			try{
-    				Scanner scanner = new Scanner(new InputStreamReader(in));
-    		    	tableHeader = scanner.nextLine();
-    		    	scanner.close();
-    		    	headerItems = tableHeader.split(",");
-    		    	tableHeaderSpilt = "CREATE TABLE "+ dbName +" (";
-    				for(String item: headerItems){
-    					String corrected_item1 = item.replace(" ", "_");
-    					String corrected_item2 = corrected_item1.replaceAll("\\W","");
-    					
-    					String tableHeaderSetup = corrected_item2 +" STRING,";
-    					tableHeaderSpilt += tableHeaderSetup;
-    				}
-    				tableHeaderSpilt = tableHeaderSpilt.substring(0,tableHeaderSpilt.length()-1);
-    				tableHeaderSpilt += ")";
-    				db = database.getWritableDatabase();
-    				db.execSQL("DROP TABLE IF EXISTS "+dbName);
-    				db.execSQL(tableHeaderSpilt);
-    			}catch (Throwable t){
-    				
-    			}//end try/catch statement
-    		}//end run method
-    	});
-    	
-    	t.start();      	
-		try {
-			t.join();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
 		
-		text.setText(tableHeaderSpilt);		
+    	if(c.moveToFirst()){
+			String fileNameString =	c.getString(c.getColumnIndex(DownloadManager.COLUMN_LOCAL_FILENAME));	
+    		c.moveToFirst();
+			try{
+    			in = new FileInputStream(fileNameString);
+    		}catch(FileNotFoundException e){
+				String stackTrace = Log.getStackTraceString(e);
+    			Toast.makeText(getApplicationContext(),stackTrace,Toast.LENGTH_LONG).show();
+    		}//end try/catch statement 
+    	
+    		Thread t = new Thread(new Runnable(){
+    			public void run(){
+    				try{
+    					Scanner scanner = new Scanner(new InputStreamReader(in));
+    		    		tableHeader = scanner.nextLine();
+    		    		scanner.close();
+    		    		headerItems = tableHeader.split(",");
+    		    		tableHeaderSpilt = "CREATE TABLE "+ dbName +" (";
+    					for(String item: headerItems){
+    						String corrected_item1 = item.replace(" ", "_");
+    						String corrected_item2 = corrected_item1.replaceAll("\\W","");
+    					
+    						String tableHeaderSetup = corrected_item2 +" STRING,";
+    						tableHeaderSpilt += tableHeaderSetup;
+    					}
+    					tableHeaderSpilt = tableHeaderSpilt.substring(0,tableHeaderSpilt.length()-1);
+    					tableHeaderSpilt += ")";
+    					db = database.getWritableDatabase();
+    					db.execSQL("DROP TABLE IF EXISTS "+dbName);
+    					db.execSQL(tableHeaderSpilt);
+    				}catch (Throwable t){
+    				
+    				}//end try/catch statement
+    			}//end run method
+    		});
+    	
+    		t.start();      	
+			try {
+				t.join();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}//end try/catch statement
+		
+			text.setText(tableHeaderSpilt);
+		}
+		else{
+			Toast.makeText(getApplicationContext(),"Data not downloaded",Toast.LENGTH_LONG).show();
+		}
    	}//end displayText
     
     public void addData(View v){
     	final TextView downloadDisplay = (TextView)findViewById(R.id.downloadDisplay);    	
     	downloadDisplay.setText("");
     	Cursor c = mgr.query(new DownloadManager.Query().setFilterById(lastDownload));
-    	c.moveToFirst();
-    	String fileNameString =	c.getString(c.getColumnIndex(DownloadManager.COLUMN_LOCAL_FILENAME));
+		
+		if(c.moveToFirst()){
+    		c.moveToFirst();
+    		String fileNameString =	c.getString(c.getColumnIndex(DownloadManager.COLUMN_LOCAL_FILENAME));
     	    	
-    	try{
-    		in = new FileInputStream(fileNameString);
-    	}catch(FileNotFoundException e){
-    		e.printStackTrace();
-    	}
+    		try{
+    			in = new FileInputStream(fileNameString);
+    		}catch(FileNotFoundException e){
+    			e.printStackTrace();
+    		}//end try/catch statement
     	
-    	Thread t = new Thread(new Runnable(){
+    		Thread t = new Thread(new Runnable(){
     		
-    		public void run(){
-    			try{
-    				Scanner scanner = new Scanner(new InputStreamReader(in));    		    	
-    		    	ArrayList <String> HeaderArray = new ArrayList<String>(Arrays.asList(headerItems));
-    		    	String column_listings = "";
+    			public void run(){
+    				try{
+    					Scanner scanner = new Scanner(new InputStreamReader(in));    		    	
+    		    		ArrayList <String> HeaderArray = new ArrayList<String>(Arrays.asList(headerItems));
+    		    		String column_listings = "";
     		    	
-    		    	for(int i = 0; i<HeaderArray.size(); i++){
-    		    		column_listings +=HeaderArray.get(i)+",";
-    		    	}
+    		    		for(int i = 0; i<HeaderArray.size(); i++){
+    		    			column_listings +=HeaderArray.get(i)+",";
+    		    		}
     		    	
-    		    	column_listings = column_listings.substring(0, column_listings.length()-1);
-    		    	scanner.nextLine();
+    		    		column_listings = column_listings.substring(0, column_listings.length()-1);
+    		    		scanner.nextLine();
     		    	
-    		    	while (scanner.hasNextLine()){
-    		    		String curr = scanner.nextLine();   		    		
-    		    		Log.d("scanner output", curr);
-    		    		String sql_insert_statement="INSERT INTO "+dbName+" ("+column_listings+") VALUES ("+curr+");";
-    		    		Log.d("sql_statement", sql_insert_statement);
-    		    		db.execSQL(sql_insert_statement);
-    		    	}
+    		    		while (scanner.hasNextLine()){
+    		    			String curr = scanner.nextLine();   		    		
+    		    			Log.d("scanner output", curr);
+    		    			String sql_insert_statement="INSERT INTO "+dbName+" ("+column_listings+") VALUES ("+curr+");";
+    		    			Log.d("sql_statement", sql_insert_statement);
+    		    			db.execSQL(sql_insert_statement);
+    		    		}
     		    	
-    		    	scanner.close();    	  	
-    		  
-    		    	
-    			}catch (Throwable t){
+    		    		scanner.close();    	  	
+    				}catch (Throwable t){
     				
-    			}//end try/catch statement
-    		}//end run method
+    				}//end try/catch statement
+    			}//end run method
     		
-    	});
+    		});
     	
-    	t.start();
-    	try{
-    		t.join();
-    	}catch(InterruptedException e){
-    		e.printStackTrace();
-    	}
-    	downloadDisplay.setText("Finished importing to database");  	
-    	
-    	
+    		t.start();
+    		try{
+    			t.join();
+    		}catch(InterruptedException e){
+    			e.printStackTrace();
+    		}//end try/catch statement
+    		downloadDisplay.setText("Finished importing to database");
+		}
+		else {
+			Toast.makeText(getApplicationContext(),"Data Not found", Toast.LENGTH_LONG).show();
+		}
     }//end Add Data method
-    
-      
     
     
     BroadcastReceiver onComplete=new BroadcastReceiver() {
@@ -230,6 +226,16 @@ public class GraphCreatorActivity extends Activity {
           findViewById(R.id.urlButton).setEnabled(true);
         }
       };
-      
+	  
+  /* Start of private methods in the class */
+  
+	private DownloadManager.Request startDownload(Uri url){
+		Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).mkdirs();
+		DownloadManager.Request test = new DownloadManager.Request(url);
+		test.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI | DownloadManager.Request.NETWORK_MOBILE);
+		test.setAllowedOverRoaming(false);
+
+		return test;
+	}//end startDownload
       
 }//end DownloadManagerActivity class
