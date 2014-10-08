@@ -54,7 +54,7 @@ public class GraphCreatorActivity extends Activity {
     /** Called when the activity is first created. */
 	InputStream in;
 	DownloadManager mgr;
-	long lastDownload;
+	long latestDownload;
 	String tableHeader;
 	static String [] headerItems;
 	String tableHeaderSpilt;
@@ -86,30 +86,14 @@ public class GraphCreatorActivity extends Activity {
 	}//end addListenerOnButton
 
 	public void onDownload(View v){
-		TextView urlObject = ((TextView)findViewById(R.id.url));
-    	String urlAddress = urlObject.getText().toString();
-    	if(urlAddress.equals(""))
-    	{
-    		Toast.makeText(getApplicationContext(),"URL is blank", Toast.LENGTH_LONG).show();
-    	}
-    	else
-    	{
-    		Uri url = Uri.parse(urlAddress);
-    	
-    		Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).mkdirs();
-    		DownloadManager.Request test = new DownloadManager.Request(url);
-    		test.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI | DownloadManager.Request.NETWORK_MOBILE);
-    		test.setAllowedOverRoaming(false);
-    	  	
-    		v.setEnabled(false);
-    	
-    		lastDownload = mgr.enqueue(test);
-    	}
+		TextView urlObject = (TextView) findViewById(R.id.url);
+    	String urlText = urlObject.getText().toString();
+		checkUrl(urlText,v); 
     }//end onDownload
 	
     public void displayText(View v){
     	TextView text = ((TextView)findViewById(R.id.downloadDisplay));
-    	Cursor c = mgr.query(new DownloadManager.Query().setFilterById(lastDownload));
+    	Cursor c = mgr.query(new DownloadManager.Query().setFilterById(latestDownload));
 		
     	if(c.moveToFirst()){
 			String fileNameString =	c.getString(c.getColumnIndex(DownloadManager.COLUMN_LOCAL_FILENAME));	
@@ -164,7 +148,7 @@ public class GraphCreatorActivity extends Activity {
     public void addData(View v){
     	final TextView downloadDisplay = (TextView)findViewById(R.id.downloadDisplay);    	
     	downloadDisplay.setText("");
-    	Cursor c = mgr.query(new DownloadManager.Query().setFilterById(lastDownload));
+    	Cursor c = mgr.query(new DownloadManager.Query().setFilterById(latestDownload));
 		
 		if(c.moveToFirst()){
     		c.moveToFirst();
@@ -237,5 +221,18 @@ public class GraphCreatorActivity extends Activity {
 
 		return test;
 	}//end startDownload
-      
+    
+	private void checkUrl(String urlText, View v){
+		if(urlText.equals(""))
+    	{
+    		Toast.makeText(getApplicationContext(),"URL is blank", Toast.LENGTH_LONG).show();
+    	}
+    	else
+    	{
+    		Uri urlAddress = Uri.parse(urlText);
+    		DownloadManager.Request downloadRequest = startDownload(urlAddress);
+    		v.setEnabled(false);
+    		latestDownload = mgr.enqueue(downloadRequest);
+    	}
+	}   
 }//end DownloadManagerActivity class
