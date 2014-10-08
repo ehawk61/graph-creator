@@ -14,7 +14,7 @@
     You should have received a copy of the GNU General Public License
     along with GraphCreator.  If not, see <http://www.gnu.org/licenses/>.
     
-    Copyright (C) 2012 Jonathan L. Meek
+    Copyright (C) 2012-2014 Jonathan L. Meek
  -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
@@ -77,6 +77,6 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:text="@string/graphSetup"
-        android:onClick=""
+        android:onClick="addListenerOnButton"
         android:paddingBottom="10dip"  />
 </LinearLayout>
