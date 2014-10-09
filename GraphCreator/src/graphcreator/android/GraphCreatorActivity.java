@@ -62,34 +62,31 @@ public class GraphCreatorActivity extends Activity {
 	Database database = new Database(this, dbName);
 	static SQLiteDatabase db;
 
-	
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         mgr =(DownloadManager)getSystemService(DOWNLOAD_SERVICE);
         registerReceiver(onComplete, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
-        addListenerOnButton();
+        graphSetupButtonListener();
     }//end onCreate
     
-    public void addListenerOnButton() {
-    	final Context context = this;    
-    	Button button = (Button) findViewById(R.id.swtichScreenButton);
-    	
-    	button.setOnClickListener(new OnClickListener() {    		
+    public void graphSetupButtonListener() {    
+    	Button graphSetupButton = (Button) findViewById(R.id.swtichScreenButton);
+    	graphSetupButton.setOnClickListener(new OnClickListener() {    		
     		public void onClick(View arg0) {     
-    			Intent intent = new Intent(context, webViewActivity.class);
+    			Intent intent = new Intent(getApplicationContext(), webViewActivity.class);
     			startActivity(intent);   
     		}
      
     	});
-	}//end addListenerOnButton
+	}//end graphSetupButtonListener method
 
-	public void onDownload(View v){
+	public void pullDataToGraph(View mainView){
 		TextView urlObject = (TextView) findViewById(R.id.url);
     	String urlText = urlObject.getText().toString();
-		checkUrl(urlText,v); 
-    }//end onDownload
+		checkUrl(urlText,mainView); 
+    }//end pullDataToGraph method
 	
     public void displayText(View v){
     	TextView text = ((TextView)findViewById(R.id.downloadDisplay));
@@ -98,53 +95,16 @@ public class GraphCreatorActivity extends Activity {
     	if(c.moveToFirst()){
 			String fileNameString =	c.getString(c.getColumnIndex(DownloadManager.COLUMN_LOCAL_FILENAME));	
     		c.moveToFirst();
-			try{
-    			in = new FileInputStream(fileNameString);
-    		}catch(FileNotFoundException e){
-				String stackTrace = Log.getStackTraceString(e);
-    			Toast.makeText(getApplicationContext(),stackTrace,Toast.LENGTH_LONG).show();
-    		}//end try/catch statement 
-    	
-    		Thread t = new Thread(new Runnable(){
-    			public void run(){
-    				try{
-    					Scanner scanner = new Scanner(new InputStreamReader(in));
-    		    		tableHeader = scanner.nextLine();
-    		    		scanner.close();
-    		    		headerItems = tableHeader.split(",");
-    		    		tableHeaderSpilt = "CREATE TABLE "+ dbName +" (";
-    					for(String item: headerItems){
-    						String corrected_item1 = item.replace(" ", "_");
-    						String corrected_item2 = corrected_item1.replaceAll("\\W","");
-    					
-    						String tableHeaderSetup = corrected_item2 +" STRING,";
-    						tableHeaderSpilt += tableHeaderSetup;
-    					}
-    					tableHeaderSpilt = tableHeaderSpilt.substring(0,tableHeaderSpilt.length()-1);
-    					tableHeaderSpilt += ")";
-    					db = database.getWritableDatabase();
-    					db.execSQL("DROP TABLE IF EXISTS "+dbName);
-    					db.execSQL(tableHeaderSpilt);
-    				}catch (Throwable t){
-    				
-    				}//end try/catch statement
-    			}//end run method
-    		});
-    	
-    		t.start();      	
-			try {
-				t.join();
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}//end try/catch statement
-		
+			createFileInputStreamFromData(fileNameString); 
+   			dbTableCreation();
 			text.setText(tableHeaderSpilt);
 		}
 		else{
 			Toast.makeText(getApplicationContext(),"Data not downloaded",Toast.LENGTH_LONG).show();
 		}
    	}//end displayText
-    
+	
+	
     public void addData(View v){
     	final TextView downloadDisplay = (TextView)findViewById(R.id.downloadDisplay);    	
     	downloadDisplay.setText("");
@@ -220,7 +180,7 @@ public class GraphCreatorActivity extends Activity {
 		test.setAllowedOverRoaming(false);
 
 		return test;
-	}//end startDownload
+	}//end startDownload method
     
 	private void checkUrl(String urlText, View v){
 		if(urlText.equals(""))
@@ -234,5 +194,50 @@ public class GraphCreatorActivity extends Activity {
     		v.setEnabled(false);
     		latestDownload = mgr.enqueue(downloadRequest);
     	}
-	}   
+	}//end checkUrl method
+	
+	private void createFileInputStreamFromData(String fileNameString){
+		try{
+			in = new FileInputStream(fileNameString);
+		}catch(FileNotFoundException e){
+			String stackTrace = Log.getStackTraceString(e);
+			Toast.makeText(getApplicationContext(),stackTrace,Toast.LENGTH_LONG).show();
+		}//end try/catch statement
+	}//end createFileInputStreamFromData method
+	
+    private void dbTableCreation(){
+		Thread t = new Thread(new Runnable(){
+    			public void run(){
+    				try{
+    					Scanner scanner = new Scanner(new InputStreamReader(in));
+    		    		tableHeader = scanner.nextLine();
+    		    		scanner.close();
+    		    		headerItems = tableHeader.split(",");
+    		    		tableHeaderSpilt = "CREATE TABLE "+ dbName +" (";
+    					for(String item: headerItems){
+    						String corrected_item1 = item.replace(" ", "_");
+    						String corrected_item2 = corrected_item1.replaceAll("\\W","");
+
+    						String tableHeaderSetup = corrected_item2 +" STRING,";
+    						tableHeaderSpilt += tableHeaderSetup;
+    					}
+    					tableHeaderSpilt = tableHeaderSpilt.substring(0,tableHeaderSpilt.length()-1);
+    					tableHeaderSpilt += ")";
+    					db = database.getWritableDatabase();
+    					db.execSQL("DROP TABLE IF EXISTS "+dbName);
+    					db.execSQL(tableHeaderSpilt);
+    				}catch (Throwable t){
+
+    				}//end try/catch statement
+    			}//end run method
+    		});
+
+		t.start();      	
+		try {
+			t.join();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}//end try/catch statement
+	}//end dbTableCreation method
+	
 }//end DownloadManagerActivity class
