@@ -62,6 +62,7 @@ public class GraphCreatorActivity extends Activity {
 	Database database = new Database(this, dbName);
 	static SQLiteDatabase db;
 
+	
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -108,62 +109,24 @@ public class GraphCreatorActivity extends Activity {
     public void addData(View v){
     	final TextView downloadDisplay = (TextView)findViewById(R.id.downloadDisplay);    	
     	downloadDisplay.setText("");
-    	Cursor c = mgr.query(new DownloadManager.Query().setFilterById(latestDownload));
+    	Cursor downloadFileCursor = mgr.query(new DownloadManager.Query().setFilterById(latestDownload));
 		
-		if(c.moveToFirst()){
-    		c.moveToFirst();
-    		String fileNameString =	c.getString(c.getColumnIndex(DownloadManager.COLUMN_LOCAL_FILENAME));
+		if(downloadFileCursor.moveToFirst()){
+    		downloadFileCursor.moveToFirst();
+    		String fileNameString =	downloadFileCursor.getString(downloadFileCursor.getColumnIndex(DownloadManager.COLUMN_LOCAL_FILENAME));
     	    	
     		try{
     			in = new FileInputStream(fileNameString);
     		}catch(FileNotFoundException e){
     			e.printStackTrace();
     		}//end try/catch statement
-    	
-    		Thread t = new Thread(new Runnable(){
-    		
-    			public void run(){
-    				try{
-    					Scanner scanner = new Scanner(new InputStreamReader(in));    		    	
-    		    		ArrayList <String> HeaderArray = new ArrayList<String>(Arrays.asList(headerItems));
-    		    		String column_listings = "";
-    		    	
-    		    		for(int i = 0; i<HeaderArray.size(); i++){
-    		    			column_listings +=HeaderArray.get(i)+",";
-    		    		}
-    		    	
-    		    		column_listings = column_listings.substring(0, column_listings.length()-1);
-    		    		scanner.nextLine();
-    		    	
-    		    		while (scanner.hasNextLine()){
-    		    			String curr = scanner.nextLine();   		    		
-    		    			Log.d("scanner output", curr);
-    		    			String sql_insert_statement="INSERT INTO "+dbName+" ("+column_listings+") VALUES ("+curr+");";
-    		    			Log.d("sql_statement", sql_insert_statement);
-    		    			db.execSQL(sql_insert_statement);
-    		    		}
-    		    	
-    		    		scanner.close();    	  	
-    				}catch (Throwable t){
-    				
-    				}//end try/catch statement
-    			}//end run method
-    		
-    		});
-    	
-    		t.start();
-    		try{
-    			t.join();
-    		}catch(InterruptedException e){
-    			e.printStackTrace();
-    		}//end try/catch statement
+    		dbRowAdditionThreadRun();
     		downloadDisplay.setText("Finished importing to database");
 		}
 		else {
 			Toast.makeText(getApplicationContext(),"Data Not found", Toast.LENGTH_LONG).show();
 		}
     }//end Add Data method
-    
     
     BroadcastReceiver onComplete=new BroadcastReceiver() {
         public void onReceive(Context ctxt, Intent intent) {
@@ -239,5 +202,49 @@ public class GraphCreatorActivity extends Activity {
 			e.printStackTrace();
 		}//end try/catch statement
 	}//end dbTableCreation method
+	
+	private void dbRowAdditionThreadRun(){
+		Thread t = new Thread(new Runnable(){
+			public void run(){
+				dbRowAddition();
+    		}//end run method
+		});
+
+		t.start();
+		try{
+			t.join();
+		}catch(InterruptedException e){
+			e.printStackTrace();
+		}//end try/catch statement
+		
+	}//end dbRowAdditionThreadRun method
+	
+	public void dbRowAddition(){
+		try{
+			Scanner scanner = new Scanner(new InputStreamReader(in));    		    	
+			ArrayList <String> HeaderArray = new ArrayList<String>(Arrays.asList(headerItems));
+			String column_listings = "";
+
+			for(int i = 0; i<HeaderArray.size(); i++){
+				column_listings +=HeaderArray.get(i)+",";
+			}
+	
+			column_listings = column_listings.substring(0, column_listings.length()-1);
+			scanner.nextLine();
+
+			while (scanner.hasNextLine()){
+				String curr = scanner.nextLine();   		    		
+				Log.d("scanner output", curr);
+				String sql_insert_statement="INSERT INTO "+dbName+" ("+column_listings+") VALUES ("+curr+");";
+				Log.d("sql_statement", sql_insert_statement);
+				db.execSQL(sql_insert_statement);
+			}
+
+			scanner.close();    	  	
+		}catch (Throwable t){
+
+		}//end try/catch statement
+	}//end dbRowAddition method
+		
 	
 }//end DownloadManagerActivity class
