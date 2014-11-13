@@ -53,8 +53,8 @@ import android.widget.*;
 public class GraphCreatorActivity extends Activity {
     /** Called when the activity is first created. */
 	InputStream in;
-	DownloadManager mgr;
-	long latestDownload;
+	DownloadManager downloadHandlerQueue;
+	long latestDownloadId;
 	String tableHeader;
 	static String [] headerItems;
 	String tableHeaderSpilt;
@@ -62,148 +62,56 @@ public class GraphCreatorActivity extends Activity {
 	Database database = new Database(this, dbName);
 	static SQLiteDatabase db;
 
-	
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
-        mgr =(DownloadManager)getSystemService(DOWNLOAD_SERVICE);
+        downloadHandlerQueue =(DownloadManager)getSystemService(DOWNLOAD_SERVICE);
         registerReceiver(onComplete, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
-        addListenerOnButton();
+        graphSetupButtonListener();
     }//end onCreate
     
-    public void addListenerOnButton() {
-    	final Context context = this;    
-    	Button button = (Button) findViewById(R.id.swtichScreenButton);
-    	
-    	button.setOnClickListener(new OnClickListener() {    		
+    public void graphSetupButtonListener() {    
+    	Button graphSetupButton = (Button) findViewById(R.id.swtichScreenButton);
+    	graphSetupButton.setOnClickListener(new OnClickListener() {    		
     		public void onClick(View arg0) {     
-    			Intent intent = new Intent(context, webViewActivity.class);
+    			Intent intent = new Intent(getApplicationContext(), webViewActivity.class);
     			startActivity(intent);   
     		}
-     
-    	});
-	}//end addListenerOnButton
+     	});
+	}//end graphSetupButtonListener method
 
-	public void onDownload(View v){
+	public void pullDataToGraph(View mainView){
 		TextView urlObject = (TextView) findViewById(R.id.url);
     	String urlText = urlObject.getText().toString();
-		checkUrl(urlText,v); 
-    }//end onDownload
+		checkUrl(urlText,mainView); 
+    }//end pullDataToGraph method
 	
-    public void displayText(View v){
-    	TextView text = ((TextView)findViewById(R.id.downloadDisplay));
-    	Cursor c = mgr.query(new DownloadManager.Query().setFilterById(latestDownload));
+    public void updateStatus(View mainView){
+    	TextView statusOutputTextView = ((TextView)findViewById(R.id.downloadDisplay));
+    	Cursor downloadFileCursor = downloadHandlerQueue.query(new DownloadManager.Query().setFilterById(latestDownloadId));
 		
-    	if(c.moveToFirst()){
-			String fileNameString =	c.getString(c.getColumnIndex(DownloadManager.COLUMN_LOCAL_FILENAME));	
-    		c.moveToFirst();
-			try{
-    			in = new FileInputStream(fileNameString);
-    		}catch(FileNotFoundException e){
-				String stackTrace = Log.getStackTraceString(e);
-    			Toast.makeText(getApplicationContext(),stackTrace,Toast.LENGTH_LONG).show();
-    		}//end try/catch statement 
-    	
-    		Thread t = new Thread(new Runnable(){
-    			public void run(){
-    				try{
-    					Scanner scanner = new Scanner(new InputStreamReader(in));
-    		    		tableHeader = scanner.nextLine();
-    		    		scanner.close();
-    		    		headerItems = tableHeader.split(",");
-    		    		tableHeaderSpilt = "CREATE TABLE "+ dbName +" (";
-    					for(String item: headerItems){
-    						String corrected_item1 = item.replace(" ", "_");
-    						String corrected_item2 = corrected_item1.replaceAll("\\W","");
-    					
-    						String tableHeaderSetup = corrected_item2 +" STRING,";
-    						tableHeaderSpilt += tableHeaderSetup;
-    					}
-    					tableHeaderSpilt = tableHeaderSpilt.substring(0,tableHeaderSpilt.length()-1);
-    					tableHeaderSpilt += ")";
-    					db = database.getWritableDatabase();
-    					db.execSQL("DROP TABLE IF EXISTS "+dbName);
-    					db.execSQL(tableHeaderSpilt);
-    				}catch (Throwable t){
-    				
-    				}//end try/catch statement
-    			}//end run method
-    		});
-    	
-    		t.start();      	
-			try {
-				t.join();
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}//end try/catch statement
-		
-			text.setText(tableHeaderSpilt);
+    	if(downloadFileCursor.moveToFirst()){
+			convertCursorToDBData(downloadFileCursor,"table",statusOutputTextView);
 		}
 		else{
 			Toast.makeText(getApplicationContext(),"Data not downloaded",Toast.LENGTH_LONG).show();
 		}
    	}//end displayText
-    
+	
     public void addData(View v){
-    	final TextView downloadDisplay = (TextView)findViewById(R.id.downloadDisplay);    	
-    	downloadDisplay.setText("");
-    	Cursor c = mgr.query(new DownloadManager.Query().setFilterById(latestDownload));
+    	final TextView statusOutputTextView = (TextView)findViewById(R.id.downloadDisplay);    	
+    	statusOutputTextView.setText("");
+    	Cursor downloadFileCursor = downloadHandlerQueue.query(new DownloadManager.Query().setFilterById(latestDownloadId));
 		
-		if(c.moveToFirst()){
-    		c.moveToFirst();
-    		String fileNameString =	c.getString(c.getColumnIndex(DownloadManager.COLUMN_LOCAL_FILENAME));
-    	    	
-    		try{
-    			in = new FileInputStream(fileNameString);
-    		}catch(FileNotFoundException e){
-    			e.printStackTrace();
-    		}//end try/catch statement
-    	
-    		Thread t = new Thread(new Runnable(){
-    		
-    			public void run(){
-    				try{
-    					Scanner scanner = new Scanner(new InputStreamReader(in));    		    	
-    		    		ArrayList <String> HeaderArray = new ArrayList<String>(Arrays.asList(headerItems));
-    		    		String column_listings = "";
-    		    	
-    		    		for(int i = 0; i<HeaderArray.size(); i++){
-    		    			column_listings +=HeaderArray.get(i)+",";
-    		    		}
-    		    	
-    		    		column_listings = column_listings.substring(0, column_listings.length()-1);
-    		    		scanner.nextLine();
-    		    	
-    		    		while (scanner.hasNextLine()){
-    		    			String curr = scanner.nextLine();   		    		
-    		    			Log.d("scanner output", curr);
-    		    			String sql_insert_statement="INSERT INTO "+dbName+" ("+column_listings+") VALUES ("+curr+");";
-    		    			Log.d("sql_statement", sql_insert_statement);
-    		    			db.execSQL(sql_insert_statement);
-    		    		}
-    		    	
-    		    		scanner.close();    	  	
-    				}catch (Throwable t){
-    				
-    				}//end try/catch statement
-    			}//end run method
-    		
-    		});
-    	
-    		t.start();
-    		try{
-    			t.join();
-    		}catch(InterruptedException e){
-    			e.printStackTrace();
-    		}//end try/catch statement
-    		downloadDisplay.setText("Finished importing to database");
+		if(downloadFileCursor.moveToFirst()){
+			convertCursorToDBData(downloadFileCursor,"rows",statusOutputTextView);
+			
 		}
 		else {
 			Toast.makeText(getApplicationContext(),"Data Not found", Toast.LENGTH_LONG).show();
 		}
     }//end Add Data method
-    
     
     BroadcastReceiver onComplete=new BroadcastReceiver() {
         public void onReceive(Context ctxt, Intent intent) {
@@ -218,9 +126,8 @@ public class GraphCreatorActivity extends Activity {
 		DownloadManager.Request test = new DownloadManager.Request(url);
 		test.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI | DownloadManager.Request.NETWORK_MOBILE);
 		test.setAllowedOverRoaming(false);
-
 		return test;
-	}//end startDownload
+	}//end startDownload method
     
 	private void checkUrl(String urlText, View v){
 		if(urlText.equals(""))
@@ -232,7 +139,91 @@ public class GraphCreatorActivity extends Activity {
     		Uri urlAddress = Uri.parse(urlText);
     		DownloadManager.Request downloadRequest = startDownload(urlAddress);
     		v.setEnabled(false);
-    		latestDownload = mgr.enqueue(downloadRequest);
+    		latestDownloadId = downloadHandlerQueue.enqueue(downloadRequest);
     	}
-	}   
-}//end DownloadManagerActivity class
+	}//end checkUrl method
+	
+	private void createFileInputStreamFromData(String fileNameString){
+		try{
+			in = new FileInputStream(fileNameString);
+		}catch(FileNotFoundException e){
+			String stackTrace = Log.getStackTraceString(e);
+			Toast.makeText(getApplicationContext(),stackTrace,Toast.LENGTH_LONG).show();
+		}//end try/catch statement
+	}//end createFileInputStreamFromData method
+	
+    private void dbTableCreation(){
+		try{
+    		Scanner scanner = new Scanner(new InputStreamReader(in));
+    		tableHeader = scanner.nextLine();
+    		scanner.close();
+    		headerItems = tableHeader.split(",");
+    		tableHeaderSpilt = "CREATE TABLE "+ dbName +" (";
+			
+    		for(String item: headerItems){
+    			String corrected_item1 = item.replace(" ", "_");
+    			String corrected_item2 = corrected_item1.replaceAll("\\W","");
+				String tableHeaderSetup = corrected_item2 +" STRING,";
+    			tableHeaderSpilt += tableHeaderSetup;
+    		}
+			
+    		tableHeaderSpilt = tableHeaderSpilt.substring(0,tableHeaderSpilt.length()-1);
+    		tableHeaderSpilt += ")";
+    		db = database.getWritableDatabase();
+    		db.execSQL("DROP TABLE IF EXISTS "+dbName);
+    		db.execSQL(tableHeaderSpilt);
+			
+    	}catch (Throwable t){
+
+    	}//end try/catch statement
+   	}//end dbTableCreation method
+	
+	private void dbRowAddition(){
+		try{
+			Scanner scanner = new Scanner(new InputStreamReader(in));    		    	
+			ArrayList <String> HeaderArray = new ArrayList<String>(Arrays.asList(headerItems));
+			String column_listings = "";
+
+			for(int i = 0; i<HeaderArray.size(); i++){
+				column_listings +=HeaderArray.get(i)+",";
+			}
+	
+			column_listings = column_listings.substring(0, column_listings.length()-1);
+			scanner.nextLine();
+
+			while (scanner.hasNextLine()){
+				String curr = scanner.nextLine();   		    		
+				Log.d("scanner output", curr);
+				String sql_insert_statement="INSERT INTO "+dbName+" ("+column_listings+") VALUES ("+curr+");";
+				Log.d("sql_statement", sql_insert_statement);
+				db.execSQL(sql_insert_statement);
+			}
+
+			scanner.close();    	  	
+		}catch (Throwable t){
+
+		}//end try/catch statement
+	}//end dbRowAddition method
+	
+	private void convertCursorToDBData(Cursor fileCursor, String dbOperation, TextView statusView){
+		if(dbOperation.equals("table")){
+			String fileNameString =	fileCursor.getString(fileCursor.getColumnIndex(DownloadManager.COLUMN_LOCAL_FILENAME));	
+    		fileCursor.moveToFirst();
+			createFileInputStreamFromData(fileNameString); 
+   			dbTableCreation();
+			statusView.setText(tableHeaderSpilt);
+		}
+
+		else if(dbOperation.equals("rows")){
+			String fileNameString =	fileCursor.getString(fileCursor.getColumnIndex(DownloadManager.COLUMN_LOCAL_FILENAME));	
+    		fileCursor.moveToFirst();
+			createFileInputStreamFromData(fileNameString); 
+   			dbRowAddition();
+			statusView.setText("Finished importing to database");
+		}
+		else{
+			Toast.makeText(getApplicationContext(),"Invaild database operation",Toast.LENGTH_LONG).show();
+		}
+	}//end convertCursorToDBData method
+			
+}//end GraphCreatorActivity class

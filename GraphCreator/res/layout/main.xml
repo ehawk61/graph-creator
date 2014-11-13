@@ -41,7 +41,7 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:text="@string/buttonText"
-        android:onClick="onDownload"
+        android:onClick="pullDataToGraph"
         android:paddingBottom="10dip"  />
     
     <TextView
@@ -62,7 +62,7 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:text="@string/createTableSQL"
-        android:onClick="displayText"
+        android:onClick="updateStatus"
         android:paddingBottom="10dip"  />
     <Button
         android:id="@+id/addDataButton"
@@ -77,6 +77,6 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:text="@string/graphSetup"
-        android:onClick="addListenerOnButton"
+        android:onClick="graphSetupButtonListener"
         android:paddingBottom="10dip"  />
 </LinearLayout>
