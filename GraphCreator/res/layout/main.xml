@@ -16,12 +16,20 @@
     
     Copyright (C) 2012-2014 Jonathan L. Meek
  -->
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+>
+
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:orientation="vertical">
    
-   
+	<Spinner
+    	android:id="@+id/fileChoice"
+    	android:layout_width="fill_parent"
+    	android:layout_height="wrap_content"    />
 	<TextView
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
@@ -80,3 +88,4 @@
         android:onClick="graphSetupButtonListener"
         android:paddingBottom="10dip"  />
 </LinearLayout>
+</ScrollView>
