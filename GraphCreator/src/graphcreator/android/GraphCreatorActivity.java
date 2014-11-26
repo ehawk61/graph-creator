@@ -69,18 +69,9 @@ public class GraphCreatorActivity extends Activity {
         downloadHandlerQueue =(DownloadManager)getSystemService(DOWNLOAD_SERVICE);
         registerReceiver(onComplete, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
         graphSetupButtonListener();
+		setupFileSpinner();
     }//end onCreate
     
-    public void graphSetupButtonListener() {    
-    	Button graphSetupButton = (Button) findViewById(R.id.swtichScreenButton);
-    	graphSetupButton.setOnClickListener(new OnClickListener() {    		
-    		public void onClick(View arg0) {     
-    			Intent intent = new Intent(getApplicationContext(), webViewActivity.class);
-    			startActivity(intent);   
-    		}
-     	});
-	}//end graphSetupButtonListener method
-
 	public void pullDataToGraph(View mainView){
 		TextView urlObject = (TextView) findViewById(R.id.url);
     	String urlText = urlObject.getText().toString();
@@ -120,7 +111,22 @@ public class GraphCreatorActivity extends Activity {
       };
 	  
   /* Start of private methods in the class */
-  
+  	private void graphSetupButtonListener() {    
+    	Button graphSetupButton = (Button) findViewById(R.id.swtichScreenButton);
+    	graphSetupButton.setOnClickListener(new OnClickListener() {    		
+				public void onClick(View arg0) {     
+					Intent intent = new Intent(getApplicationContext(), webViewActivity.class);
+					startActivity(intent);   
+				}
+			});
+	}//end graphSetupButtonListener method
+	
+	private void setupFileSpinner(){
+		Spinner fileSpinner =(Spinner)findViewById(R.id.fileChoice);
+		ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,R.array.source_location, android.R.layout.simple_spinner_item);   	      	            
+		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		fileSpinner.setAdapter(adapter);
+	}
 	private DownloadManager.Request startDownload(Uri url){
 		Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).mkdirs();
 		DownloadManager.Request test = new DownloadManager.Request(url);
