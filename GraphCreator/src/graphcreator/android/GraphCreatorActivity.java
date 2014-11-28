@@ -39,7 +39,6 @@ import android.content.IntentFilter;
 
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
 
 import android.net.Uri;
 import android.os.Bundle;
@@ -51,8 +50,7 @@ import android.view.View.OnClickListener;
 import android.widget.*;
 
 public class GraphCreatorActivity extends Activity {
-    /** Called when the activity is first created. */
-	InputStream in;
+    InputStream fileInputStream;
 	DownloadManager downloadHandlerQueue;
 	long latestDownloadId;
 	String tableHeader;
@@ -122,12 +120,14 @@ public class GraphCreatorActivity extends Activity {
 	}//end graphSetupButtonListener method
 	
 	private void setupFileSpinner(){
-		Spinner fileSpinner =(Spinner)findViewById(R.id.fileChoice);
+		final Spinner fileSpinner =(Spinner)findViewById(R.id.fileChoice);
 		ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,R.array.source_location, android.R.layout.simple_spinner_item);   	      	            
 		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		fileSpinner.setAdapter(adapter);
-	}
-	private DownloadManager.Request startDownload(Uri url){
+        fileSpinner.setOnItemSelectedListener(new fileSpinnerActivity(fileSpinner, this));
+    }//end setupFileSpinner method
+
+   private DownloadManager.Request startDownload(Uri url){
 		Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).mkdirs();
 		DownloadManager.Request test = new DownloadManager.Request(url);
 		test.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI | DownloadManager.Request.NETWORK_MOBILE);
@@ -151,7 +151,7 @@ public class GraphCreatorActivity extends Activity {
 	
 	private void createFileInputStreamFromData(String fileNameString){
 		try{
-			in = new FileInputStream(fileNameString);
+			fileInputStream = new FileInputStream(fileNameString);
 		}catch(FileNotFoundException e){
 			String stackTrace = Log.getStackTraceString(e);
 			Toast.makeText(getApplicationContext(),stackTrace,Toast.LENGTH_LONG).show();
@@ -160,7 +160,7 @@ public class GraphCreatorActivity extends Activity {
 	
     private void dbTableCreation(){
 		try{
-    		Scanner scanner = new Scanner(new InputStreamReader(in));
+    		Scanner scanner = new Scanner(new InputStreamReader(fileInputStream));
     		tableHeader = scanner.nextLine();
     		scanner.close();
     		headerItems = tableHeader.split(",");
@@ -186,7 +186,7 @@ public class GraphCreatorActivity extends Activity {
 	
 	private void dbRowAddition(){
 		try{
-			Scanner scanner = new Scanner(new InputStreamReader(in));    		    	
+			Scanner scanner = new Scanner(new InputStreamReader(fileInputStream));
 			ArrayList <String> HeaderArray = new ArrayList<String>(Arrays.asList(headerItems));
 			String column_listings = "";
 
