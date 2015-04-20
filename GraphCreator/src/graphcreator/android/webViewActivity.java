@@ -19,14 +19,6 @@
 
 package graphcreator.android;
 
-
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-
-import graphcreator.android.R;
-
 import android.app.Activity;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -35,24 +27,27 @@ import android.util.Log;
 import android.view.View;
 import android.webkit.WebView;
 import android.widget.ArrayAdapter;
-import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 
  public class webViewActivity extends Activity{
     	Cursor dbcursor;
     	String sqlStatement="";
+
     	@Override
     	public void onCreate(Bundle savedInstanceState) {
     		super.onCreate(savedInstanceState);
     		setContentView(R.layout.datagraph);
     		Spinner Xspinner = (Spinner) findViewById(R.id.xheaderChoice);
     		Spinner Yspinner = (Spinner)findViewById(R.id.yheaderChoice);
-    	    ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,android.R.layout.simple_spinner_dropdown_item,GraphCreatorActivity.headerItems);    	      	            
+    	    ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,android.R.layout.simple_spinner_dropdown_item,CSVConverter.headerItems);
     	    adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
     	    Xspinner.setAdapter(adapter);
     	    Yspinner.setAdapter(adapter);
@@ -63,7 +58,7 @@ import android.widget.Toast;
     		Spinner Xspinner = (Spinner)findViewById(R.id.xheaderChoice);
     		Spinner Yspinner = (Spinner)findViewById(R.id.yheaderChoice);    		
     		
-    		sqlStatement = " SELECT "+Xspinner.getSelectedItem().toString()+","+ Yspinner.getSelectedItem().toString() + " FROM "+ GraphCreatorActivity.dbName;
+    		sqlStatement = " SELECT "+Xspinner.getSelectedItem().toString()+","+ Yspinner.getSelectedItem().toString() + " FROM "+ CSVConverter.dbName;
     		Log.d("db_statement", sqlStatement);
     		text.setText(sqlStatement);
     	}//end sqlStringDisplay method
@@ -72,11 +67,12 @@ import android.widget.Toast;
     		
     		TextView text = (TextView)findViewById(R.id.dbQueryStatus);
     		try{
-    			dbcursor = GraphCreatorActivity.db.rawQuery(sqlStatement, null);
+    			dbcursor = CSVConverter.db.rawQuery(sqlStatement, null);
     			Log.d("row count", Integer.toString(dbcursor.getCount()));
     			Log.d("column count",Integer.toString(dbcursor.getColumnCount()) );
     		}catch(Exception e){
     			Toast.makeText(getApplicationContext(), "Query failed", Toast.LENGTH_LONG).show();
+
     		}  		
     		dbcursor.close();
     		text.setText("Query completed");
@@ -86,9 +82,9 @@ import android.widget.Toast;
     	public void generateFile(View v){
     		RadioGroup g = (RadioGroup)findViewById(R.id.graphType);
     		int selected = g.getCheckedRadioButtonId();
-    		String graph_type = ((RadioButton)findViewById(selected)).getTag().toString();
+    		String graph_type = findViewById(selected).getTag().toString();
     		String graph = "";
-    		dbcursor = GraphCreatorActivity.db.rawQuery(sqlStatement, null);
+    		dbcursor = CSVConverter.db.rawQuery(sqlStatement, null);
     		TextView text = (TextView)findViewById(R.id.dbQueryStatus);
     		
     		try{
@@ -108,7 +104,7 @@ import android.widget.Toast;
             	        
             	        dbcursor.moveToFirst();
             	        
-            	        while(dbcursor.isAfterLast()==false){            	        	
+            	        while(!dbcursor.isAfterLast()){
             	        	graph +="["+dbcursor.getString(0)+","+dbcursor.getString(1)+"],";            	        	
             	        	dbcursor.moveToNext();
             	        }//end while statement
@@ -140,7 +136,7 @@ import android.widget.Toast;
             	        out.write("var d1 =[");
             	        
             	        dbcursor.moveToFirst();
-            	        while(dbcursor.isAfterLast()==false){
+            	        while(!dbcursor.isAfterLast()){
             	        	graph +="["+dbcursor.getString(0)+","+dbcursor.getString(1)+"],";            	        	
             	        	dbcursor.moveToNext();
             	        }//end while statement 
@@ -168,7 +164,7 @@ import android.widget.Toast;
     	public void loadScreen(View v){
     		RadioGroup g = (RadioGroup)findViewById(R.id.graphType);
     		int selected = g.getCheckedRadioButtonId();
-    		String graph_type = ((RadioButton)findViewById(selected)).getTag().toString();
+    		String graph_type = findViewById(selected).getTag().toString();
     		setContentView(R.layout.weblayout);
     		WebView display = (WebView)findViewById(R.id.display);
     		display.getSettings().setJavaScriptEnabled(true);

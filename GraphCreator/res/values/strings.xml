@@ -14,19 +14,21 @@
     You should have received a copy of the GNU General Public License
     along with GraphCreator.  If not, see <http://www.gnu.org/licenses/>.
     
-    Copyright (C) 2012-2014 Jonathan L. Meek
+    Copyright (C) 2012-2015 Jonathan L. Meek
  -->
 <resources>
-
-    <string name="hello">Hello World, DownloadManagerActivity!</string>
+    <string name="welcome_text">Welcome to GraphCreator. Select the input source you care to use below</string>
     <string name="app_name">GraphCreator</string>
+    <!-- urllayout.xml -->
     <string name="urlTitle">URI</string>
     <string name="buttonText">Download Item</string>
 	<string name="statusTitle">Status Output</string>
 	<string name="createTableSQL">Display Create Table SQL statement</string>
 	<string name="addData">Add Data to Database</string>
 	<string name="graphSetup">Go to Graph Setup</string>
-	<string name="graphType">Graph Type</string>
+
+    <!-- datagraph.xml -->
+    <string name="graphType">Graph Type</string>
 	<string name="barGraph">Bar Graph</string>
 	<string name="lineGraph">Line Graph</string>
 	<string name="xDataSet">Data Set(X axis)</string>
@@ -38,4 +40,9 @@
 	<string name="dbQuery">Query Database</string>
 	<string name="generateHTML">Generate HTML Code</string>
 	<string name="loadHTML">Load HTML Table</string>
+
+    <!-- New Strings made as an attempt to refactor the code -->
+    <string name="urlChoice">URL</string>
+    <string name="localFileChoice">Local File</string>
+    <string name="dropboxChoice">Dropbox</string>
 </resources>
