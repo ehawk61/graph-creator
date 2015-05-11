@@ -94,11 +94,20 @@ import java.io.IOException;
         				File gpxfile = new File(root, "bar_graph.html");
             	        FileWriter gpxwriter = new FileWriter(gpxfile);
             	        BufferedWriter out = new BufferedWriter(gpxwriter);
-            	        out.write("<!DOCTYPE html><html><head><meta charset=\"utf-8\" /><title>Intro to jQuery Mobile</title><link rel=\"stylesheet\" href=\"http://code.jquery.com/mobile/1.0a2/jquery.mobile-1.0a2.min.css\" /><script src=\"http://code.jquery.com/jquery-1.4.4.min.js\"></script><script src=\"http://code.jquery.com/mobile/1.0a2/jquery.mobile-1.0a2.min.js\"></script><script src=\"http://dl.dropbox.com/u/1124545/flot/jquery.flot.js\"></script></head>");
-            	        out.write("<body><h1>Generated Bar Graph</h1>");
-            	        out.write("<div id=\"placeholder\" style=\"width:600px;height:300px;\"></div>");
-            	        out.write("<p>Testing generation</p>");
-            	        out.write("<script type=\"text/javascript\">");
+            	        out.write("<!DOCTYPE html>\n");
+                        out.write("\t<html>\n");
+                        out.write("\t\t<head>\n");
+                        out.write("\t\t\t<meta charset=\"utf-8\" />\n");
+                        out.write("\t\t\t<title>GraphCreator Results</title>\n");
+                        out.write("\t\t\t<link rel=\"stylesheet\" href=\"http://code.jquery.com/mobile/1.0a2/jquery.mobile-1.0a2.min.css\" />\n");
+                        out.write("\t\t\t<script src=\"http://code.jquery.com/jquery-1.4.4.min.js\"></script>\n");
+                        out.write("\t\t\t<script src=\"http://code.jquery.com/mobile/1.0a2/jquery.mobile-1.0a2.min.js\"></script>\n");
+                        out.write("\t\t\t<script src=\"http://dl.dropbox.com/u/1124545/flot/jquery.flot.js\"></script>\n");
+                        out.write("\t\t</head>\n");
+            	        out.write("\t\t<body>\n<h1>Generated Bar Graph</h1>\n");
+            	        out.write("\t\t\t<div id=\"placeholder\" style=\"width:600px;height:300px;\"></div>\n");
+            	        out.write("\t\t\t<p>Testing generation</p>\n");
+            	        out.write("\t\t\t<script type=\"text/javascript\">");
             	        out.write("$(function () {");
             	        out.write("var d1 =[");
             	        
@@ -117,7 +126,7 @@ import java.io.IOException;
             	        
             	        out.write("];");
             	        out.write("$.plot($(\"#placeholder\"), [{data: d1, bars: {show:true}}]);});");
-            	        out.write("</script></body></html>");
+            	        out.write("\t\t\t</script>\n</body>\n</html>");
             	        out.close();
         			}//end if statement 
         			
