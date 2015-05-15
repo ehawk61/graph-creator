@@ -90,31 +90,33 @@ import java.io.IOException;
     		try{
         		File root = Environment.getExternalStorageDirectory();
         		if(root.canWrite()){
+                    File gpxfile = new File(root, "bar_graph.html");
+                    FileWriter gpxwriter = new FileWriter(gpxfile);
+                    BufferedWriter out = new BufferedWriter(gpxwriter);
+                    out.write("<!DOCTYPE html>\n");
+                    out.write("\t<html>\n");
+                    out.write("\t\t<head>\n");
+                    out.write("\t\t\t<meta charset=\"utf-8\" />\n");
+                    out.write("\t\t\t<title>GraphCreator Results</title>\n");
+                    out.write("\t\t\t<link rel=\"stylesheet\" href=\"http://code.jquery.com/mobile/1.0a2/jquery.mobile-1.0a2.min.css\" />\n");
+                    out.write("\t\t\t<script src=\"http://code.jquery.com/jquery-1.4.4.min.js\"></script>\n");
+                    out.write("\t\t\t<script src=\"http://code.jquery.com/mobile/1.0a2/jquery.mobile-1.0a2.min.js\"></script>\n");
+                    out.write("\t\t\t<script src=\"http://dl.dropbox.com/u/1124545/flot/jquery.flot.js\"></script>\n");
+                    out.write("\t\t</head>\n");
+
         			if(graph_type.equals("bar")){
-        				File gpxfile = new File(root, "bar_graph.html");
-            	        FileWriter gpxwriter = new FileWriter(gpxfile);
-            	        BufferedWriter out = new BufferedWriter(gpxwriter);
-            	        out.write("<!DOCTYPE html>\n");
-                        out.write("\t<html>\n");
-                        out.write("\t\t<head>\n");
-                        out.write("\t\t\t<meta charset=\"utf-8\" />\n");
-                        out.write("\t\t\t<title>GraphCreator Results</title>\n");
-                        out.write("\t\t\t<link rel=\"stylesheet\" href=\"http://code.jquery.com/mobile/1.0a2/jquery.mobile-1.0a2.min.css\" />\n");
-                        out.write("\t\t\t<script src=\"http://code.jquery.com/jquery-1.4.4.min.js\"></script>\n");
-                        out.write("\t\t\t<script src=\"http://code.jquery.com/mobile/1.0a2/jquery.mobile-1.0a2.min.js\"></script>\n");
-                        out.write("\t\t\t<script src=\"http://dl.dropbox.com/u/1124545/flot/jquery.flot.js\"></script>\n");
-                        out.write("\t\t</head>\n");
             	        out.write("\t\t<body>\n<h1>Generated Bar Graph</h1>\n");
             	        out.write("\t\t\t<div id=\"placeholder\" style=\"width:600px;height:300px;\"></div>\n");
             	        out.write("\t\t\t<p>Testing generation</p>\n");
-            	        out.write("\t\t\t<script type=\"text/javascript\">");
-            	        out.write("$(function () {");
-            	        out.write("var d1 =[");
-            	        
-            	        dbcursor.moveToFirst();
+            	        out.write("\t\t\t<script type=\"text/javascript\">\n");
+            	        out.write("\t\t\t$(function () {\n");
+            	        out.write("\t\t\t\tvar d1 =[");
+                        convertDataToJSArray(out);
+            	        /*dbcursor.moveToFirst();
             	        
             	        while(!dbcursor.isAfterLast()){
-            	        	graph +="["+dbcursor.getString(0)+","+dbcursor.getString(1)+"],";            	        	
+
+            	        	graph +="["+dbcursor.getInt(0)+","+dbcursor.getString(1)+"],";
             	        	dbcursor.moveToNext();
             	        }//end while statement
             	        
@@ -122,21 +124,28 @@ import java.io.IOException;
             	        	
             	        out.write(graph);
             	        Log.d("dataset", graph);
-            	        dbcursor.close();
+            	        dbcursor.close();*/
             	        
-            	        out.write("];");
-            	        out.write("$.plot($(\"#placeholder\"), [{data: d1, bars: {show:true}}]);});");
-            	        out.write("\t\t\t</script>\n</body>\n</html>");
+            	        out.write("\t\t\t\t];\n");
+                        out.write("\t\t\t\tvar data = [\n");
+                        out.write("\t\t\t\t\t{\n");
+                        out.write("\t\t\t\t\t\tdata: d1,\n");
+                        out.write("\t\t\t\t\t\tlabel: 'blah',\n");
+                        out.write("\t\t\t\t\t\tbars: {show:true, align: 'center', barWidth: 0.3}\n");
+                        out.write("\t\t\t\t\t}\n");
+                        out.write("\t\t\t\t];\n");
+                        out.write("\t\t\t\t var options = [];");
+
+            	        out.write("$.plot($(\"#placeholder\"), data, options)");
+            	        out.write("\t\t\t</script>\n\t\t</body>\n</html>");
             	        out.close();
         			}//end if statement 
         			
         			else if(graph_type.equals("line")){
-        				File gpxfile = new File(root, "line_graph.html");
-            	        FileWriter gpxwriter = new FileWriter(gpxfile);
-            	        BufferedWriter out = new BufferedWriter(gpxwriter);
-            	        String html_header = "<!DOCTYPE html><html><head><meta charset=\"utf-8\" /><title>Intro to jQuery Mobile</title><link rel=\"stylesheet\" href=\"http://code.jquery.com/mobile/1.0a2/jquery.mobile-1.0a2.min.css\" /><script src=\"http://code.jquery.com/jquery-1.4.4.min.js\"></script><script src=\"http://code.jquery.com/mobile/1.0a2/jquery.mobile-1.0a2.min.js\"></script><script src=\"http://dl.dropbox.com/u/1124545/flot/jquery.flot.js\"></script></head>";
-            	        
-            	        out.write(html_header);            	        
+        				gpxfile = new File(root, "line_graph.html");
+            	        gpxwriter = new FileWriter(gpxfile);
+            	        out = new BufferedWriter(gpxwriter);
+
             	        out.write("<body><h1>Generated Line Graph</h1>");
             	        out.write("<div id=\"placeholder\" style=\"width:600px;height:300px;\"></div>");
             	        out.write("<p>Testing generation</p>");
@@ -188,4 +197,20 @@ import java.io.IOException;
     		}
     		
     	}
+        private void convertDataToJSArray(BufferedWriter out)throws IOException{
+            String graphData ="";
+            dbcursor.moveToFirst();
+
+            while(!dbcursor.isAfterLast()){
+
+                graphData +="["+dbcursor.getInt(0)+","+dbcursor.getString(1)+"],";
+                dbcursor.moveToNext();
+            }//end while statement
+
+            graphData = graphData.substring(0,graphData.length()-1);
+
+            out.write(graphData);
+            Log.d("dataset", graphData);
+            dbcursor.close();
+        }
     }
