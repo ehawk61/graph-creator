@@ -83,61 +83,56 @@ import java.io.IOException;
     		RadioGroup g = (RadioGroup)findViewById(R.id.graphType);
     		int selected = g.getCheckedRadioButtonId();
     		String graph_type = findViewById(selected).getTag().toString();
-    		String graph = "";
     		dbcursor = CSVConverter.db.rawQuery(sqlStatement, null);
     		TextView text = (TextView)findViewById(R.id.dbQueryStatus);
     		
     		try{
         		File root = Environment.getExternalStorageDirectory();
-        		if(root.canWrite()){
+        		
+				if(root.canWrite()){
+					
                     File gpxfile = new File(root, "bar_graph.html");
                     FileWriter gpxwriter = new FileWriter(gpxfile);
                     BufferedWriter out = new BufferedWriter(gpxwriter);
-                    out.write("<!DOCTYPE html>\n");
+              
+					out.write("<!DOCTYPE html>\n");
                     out.write("\t<html>\n");
                     out.write("\t\t<head>\n");
                     out.write("\t\t\t<meta charset=\"utf-8\" />\n");
                     out.write("\t\t\t<title>GraphCreator Results</title>\n");
-                    out.write("\t\t\t<link rel=\"stylesheet\" href=\"http://code.jquery.com/mobile/1.0a2/jquery.mobile-1.0a2.min.css\" />\n");
-                    out.write("\t\t\t<script src=\"http://code.jquery.com/jquery-1.4.4.min.js\"></script>\n");
-                    out.write("\t\t\t<script src=\"http://code.jquery.com/mobile/1.0a2/jquery.mobile-1.0a2.min.js\"></script>\n");
-                    out.write("\t\t\t<script src=\"http://dl.dropbox.com/u/1124545/flot/jquery.flot.js\"></script>\n");
-                    out.write("\t\t</head>\n");
+					out.write("\t\t\t<script src=\"file:///android_asset/js/jquery.min.js\"></script>\n");
+					out.write("\t\t\t<script src=\"file:///android_asset/js/jquery.flot.min.js\"></script>\n");
+                    out.write("\t\t\t<script type=\"text/javascript\">\n");
+					out.write("\t\t\t$(function () {\n");
+					out.write("\t\t\t\tvar d1 =[");
+					convertDataToJSArray(out);
+					out.write("];\n");
+					out.write("\t\t\t\tvar data = [\n");
+					out.write("\t\t\t\t\t{\n");
+					out.write("\t\t\t\t\t\tdata: d1,\n");
+					out.write("\t\t\t\t\t\tlabel: 'blah'\n");
+					out.write("\t\t\t\t\t\t\n");
+					out.write("\t\t\t\t\t}\n");
+					out.write("\t\t\t\t];\n");
+					out.write("\t\t\t\tvar options =\n");
+					out.write("\t\t\t\t\t{\n");
+					out.write("\t\t\t\t\t\tbars:\n");
+					out.write("\t\t\t\t\t\t\t{\n");
+					out.write("\t\t\t\t\t\t\t\tshow:true,\n");
+					out.write("\t\t\t\t\t\t\t\talign: 'center',\n");
+					out.write("\t\t\t\t\t\t\t\tbarWidth: 0.3\n");
+					out.write("\t\t\t\t\t\t\t}\n");
+					out.write("\t\t\t\t\t};\n");
+					out.write("\t\t\t\t$.plot($(\"#placeholder\"), data, options);\n");
+					out.write("\t\t});\n");
+					out.write("\t\t\t</script>\n");
+					out.write("\t\t</head>\n");
 
         			if(graph_type.equals("bar")){
-            	        out.write("\t\t<body>\n<h1>Generated Bar Graph</h1>\n");
+            	        out.write("\t\t<body>\n\t\t\t<h1>Generated Bar Graph</h1>\n");
             	        out.write("\t\t\t<div id=\"placeholder\" style=\"width:600px;height:300px;\"></div>\n");
-            	        out.write("\t\t\t<p>Testing generation</p>\n");
-            	        out.write("\t\t\t<script type=\"text/javascript\">\n");
-            	        out.write("\t\t\t$(function () {\n");
-            	        out.write("\t\t\t\tvar d1 =[");
-                        convertDataToJSArray(out);
-            	        /*dbcursor.moveToFirst();
-            	        
-            	        while(!dbcursor.isAfterLast()){
-
-            	        	graph +="["+dbcursor.getInt(0)+","+dbcursor.getString(1)+"],";
-            	        	dbcursor.moveToNext();
-            	        }//end while statement
-            	        
-            	        graph = graph.substring(0,graph.length()-1);
-            	        	
-            	        out.write(graph);
-            	        Log.d("dataset", graph);
-            	        dbcursor.close();*/
-            	        
-            	        out.write("\t\t\t\t];\n");
-                        out.write("\t\t\t\tvar data = [\n");
-                        out.write("\t\t\t\t\t{\n");
-                        out.write("\t\t\t\t\t\tdata: d1,\n");
-                        out.write("\t\t\t\t\t\tlabel: 'blah',\n");
-                        out.write("\t\t\t\t\t\tbars: {show:true, align: 'center', barWidth: 0.3}\n");
-                        out.write("\t\t\t\t\t}\n");
-                        out.write("\t\t\t\t];\n");
-                        out.write("\t\t\t\t var options = [];");
-
-            	        out.write("$.plot($(\"#placeholder\"), data, options)");
-            	        out.write("\t\t\t</script>\n\t\t</body>\n</html>");
+            	        out.write("\t\t\t<p>Testing generation</p>");
+            	        out.write("\n\t\t</body>\n</html>");
             	        out.close();
         			}//end if statement 
         			
@@ -153,25 +148,25 @@ import java.io.IOException;
             	        out.write("$(function () {");
             	        out.write("var d1 =[");
             	        
-            	        dbcursor.moveToFirst();
-            	        while(!dbcursor.isAfterLast()){
-            	        	graph +="["+dbcursor.getString(0)+","+dbcursor.getString(1)+"],";            	        	
-            	        	dbcursor.moveToNext();
-            	        }//end while statement 
-            	        graph = graph.substring(0,graph.length()-1);
-            	        	
-            	        out.write(graph);
-            	        Log.d("dataset", graph);
-            	        dbcursor.close();
-            	        
-            	        out.write("];");
-            	        out.write("$.plot($(\"#placeholder\"), [{data: d1, lines:{show:true}}]);});");
-            	        out.write("</script></body></html>");
+            	        convertDataToJSArray(out);
+						
+            	        out.write("\t\t\t\t];\n");
+                        out.write("\t\t\t\tvar data = [\n");
+                        out.write("\t\t\t\t\t{\n");
+                        out.write("\t\t\t\t\t\tdata: d1,\n");
+                        out.write("\t\t\t\t\t\tlabel: 'blah',\n");
+                        out.write("\t\t\t\t\t\tbars: {show:true, align: 'center', barWidth: 0.3}\n");
+                        out.write("\t\t\t\t\t}\n");
+                        out.write("\t\t\t\t];\n");
+                        out.write("\t\t\t\tvar options = [];\n");
+
+            	        out.write("\t\t\t\t$.plot($(\"#placeholder\"), data, options);\n");
+            	        out.write("\t\t\t</script>\n\t\t</body>\n</html>");
             	        out.close();
         			}//end else if statement 
         			
         		}//try statement 
-        		text.setText("HTML graph Generated");
+        		text.setText("HTML Graph Generated");
         	}catch(IOException e){
         		Toast.makeText(getApplicationContext(), "Unable to write to file", Toast.LENGTH_LONG).show();
         		e.printStackTrace();
@@ -197,14 +192,16 @@ import java.io.IOException;
     		}
     		
     	}
+		
         private void convertDataToJSArray(BufferedWriter out)throws IOException{
             String graphData ="";
             dbcursor.moveToFirst();
+			int xAxisPlaceHolder = 0;
 
             while(!dbcursor.isAfterLast()){
-
-                graphData +="["+dbcursor.getInt(0)+","+dbcursor.getString(1)+"],";
+                graphData +="["+xAxisPlaceHolder+","+dbcursor.getString(1)+"],";
                 dbcursor.moveToNext();
+				xAxisPlaceHolder++; 
             }//end while statement
 
             graphData = graphData.substring(0,graphData.length()-1);
