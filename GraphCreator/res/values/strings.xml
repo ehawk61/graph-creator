@@ -19,6 +19,7 @@
 <resources>
     <string name="welcome_text">Welcome to GraphCreator. Select the input source you care to use below</string>
     <string name="app_name">GraphCreator</string>
+	
     <!-- urllayout.xml -->
     <string name="urlTitle">URI</string>
     <string name="buttonText">Download Item</string>
@@ -41,7 +42,7 @@
 	<string name="generateHTML">Generate HTML Code</string>
 	<string name="loadHTML">Load HTML Table</string>
 
-    <!-- New Strings made as an attempt to refactor the code -->
+    <!-- inputchoice.xml -->
     <string name="urlChoice">URL</string>
     <string name="localFileChoice">Local File</string>
     <string name="dropboxChoice">Dropbox</string>
