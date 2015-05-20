@@ -72,10 +72,9 @@ import java.io.IOException;
     			Log.d("column count",Integer.toString(dbcursor.getColumnCount()) );
     		}catch(Exception e){
     			Toast.makeText(getApplicationContext(), "Query failed", Toast.LENGTH_LONG).show();
-
     		}  		
     		dbcursor.close();
-    		text.setText("Query completed");
+    		text.setText("Query Completed");
     		
     	}//end dbQuery method
     	
@@ -90,78 +89,47 @@ import java.io.IOException;
         		File root = Environment.getExternalStorageDirectory();
         		
 				if(root.canWrite()){
-					
-                    File gpxfile = new File(root, "bar_graph.html");
-                    FileWriter gpxwriter = new FileWriter(gpxfile);
-                    BufferedWriter out = new BufferedWriter(gpxwriter);
+					if(graph_type.equals("bar")){
+                   	 	File barGraphFile = new File(root, "bar_graph.html");
+                    	FileWriter barGraphFileWriter = new FileWriter(barGraphFile);
+                    	BufferedWriter barGraphBufferedFileWriter = new BufferedWriter(barGraphFileWriter);
               
-					out.write("<!DOCTYPE html>\n");
-                    out.write("\t<html>\n");
-                    out.write("\t\t<head>\n");
-                    out.write("\t\t\t<meta charset=\"utf-8\" />\n");
-                    out.write("\t\t\t<title>GraphCreator Results</title>\n");
-					out.write("\t\t\t<script src=\"file:///android_asset/js/jquery.min.js\"></script>\n");
-					out.write("\t\t\t<script src=\"file:///android_asset/js/jquery.flot.min.js\"></script>\n");
-                    out.write("\t\t\t<script type=\"text/javascript\">\n");
-					out.write("\t\t\t$(function () {\n");
-					out.write("\t\t\t\tvar d1 =[");
-					convertDataToJSArray(out);
-					out.write("];\n");
-					out.write("\t\t\t\tvar data = [\n");
-					out.write("\t\t\t\t\t{\n");
-					out.write("\t\t\t\t\t\tdata: d1,\n");
-					out.write("\t\t\t\t\t\tlabel: 'blah'\n");
-					out.write("\t\t\t\t\t\t\n");
-					out.write("\t\t\t\t\t}\n");
-					out.write("\t\t\t\t];\n");
-					out.write("\t\t\t\tvar options =\n");
-					out.write("\t\t\t\t\t{\n");
-					out.write("\t\t\t\t\t\tbars:\n");
-					out.write("\t\t\t\t\t\t\t{\n");
-					out.write("\t\t\t\t\t\t\t\tshow:true,\n");
-					out.write("\t\t\t\t\t\t\t\talign: 'center',\n");
-					out.write("\t\t\t\t\t\t\t\tbarWidth: 0.3\n");
-					out.write("\t\t\t\t\t\t\t}\n");
-					out.write("\t\t\t\t\t};\n");
-					out.write("\t\t\t\t$.plot($(\"#placeholder\"), data, options);\n");
-					out.write("\t\t});\n");
-					out.write("\t\t\t</script>\n");
-					out.write("\t\t</head>\n");
-
-        			if(graph_type.equals("bar")){
-            	        out.write("\t\t<body>\n\t\t\t<h1>Generated Bar Graph</h1>\n");
-            	        out.write("\t\t\t<div id=\"placeholder\" style=\"width:600px;height:300px;\"></div>\n");
-            	        out.write("\t\t\t<p>Testing generation</p>");
-            	        out.write("\n\t\t</body>\n</html>");
-            	        out.close();
+						barGraphBufferedFileWriter.write("<!DOCTYPE html>\n");
+                    	barGraphBufferedFileWriter.write("\t<html>\n");
+						
+						addHtmlHeadStarter(barGraphBufferedFileWriter);
+                    	addFlotJsScriptStarter(barGraphBufferedFileWriter);
+						addFlotArraytoJsScript(barGraphBufferedFileWriter);
+						addFlotOptionstoJsScript(barGraphBufferedFileWriter,graph_type);
+						addFlotJsScriptEnder(barGraphBufferedFileWriter);
+					
+            	        barGraphBufferedFileWriter.write("\t\t<body>\n\t\t\t<h1>Generated Bar Graph</h1>\n");
+            	        barGraphBufferedFileWriter.write("\t\t\t<div id=\"placeholder\" style=\"width:600px;height:300px;\"></div>\n");
+            	        barGraphBufferedFileWriter.write("\t\t\t<p>Testing generation</p>");
+            	        barGraphBufferedFileWriter.write("\n\t\t</body>\n</html>");
+						
+            	        barGraphBufferedFileWriter.close();
         			}//end if statement 
         			
         			else if(graph_type.equals("line")){
-        				gpxfile = new File(root, "line_graph.html");
-            	        gpxwriter = new FileWriter(gpxfile);
-            	        out = new BufferedWriter(gpxwriter);
-
-            	        out.write("<body><h1>Generated Line Graph</h1>");
-            	        out.write("<div id=\"placeholder\" style=\"width:600px;height:300px;\"></div>");
-            	        out.write("<p>Testing generation</p>");
-            	        out.write("<script type=\"text/javascript\">");
-            	        out.write("$(function () {");
-            	        out.write("var d1 =[");
-            	        
-            	        convertDataToJSArray(out);
+        				File gpxfile = new File(root, "line_graph.html");
+            	        FileWriter gpxwriter = new FileWriter(gpxfile);
+            	        BufferedWriter out = new BufferedWriter(gpxwriter);
 						
-            	        out.write("\t\t\t\t];\n");
-                        out.write("\t\t\t\tvar data = [\n");
-                        out.write("\t\t\t\t\t{\n");
-                        out.write("\t\t\t\t\t\tdata: d1,\n");
-                        out.write("\t\t\t\t\t\tlabel: 'blah',\n");
-                        out.write("\t\t\t\t\t\tbars: {show:true, align: 'center', barWidth: 0.3}\n");
-                        out.write("\t\t\t\t\t}\n");
-                        out.write("\t\t\t\t];\n");
-                        out.write("\t\t\t\tvar options = [];\n");
+						out.write("<!DOCTYPE html>\n");
+                    	out.write("\t<html>\n");
 
-            	        out.write("\t\t\t\t$.plot($(\"#placeholder\"), data, options);\n");
-            	        out.write("\t\t\t</script>\n\t\t</body>\n</html>");
+						addHtmlHeadStarter(out);
+                    	addFlotJsScriptStarter(out);
+						addFlotArraytoJsScript(out);
+						addFlotOptionstoJsScript(out,graph_type);
+						addFlotJsScriptEnder(out);
+
+            	        out.write("\t\t<body>\n\t\t\t<h1>Generated Line Graph</h1>\n");
+            	        out.write("\t\t\t<div id=\"placeholder\" style=\"width:600px;height:300px;\"></div>\n");
+            	        out.write("\t\t\t<p>Testing generation</p>");
+            	        out.write("\n\t\t</body>\n</html>");
+            	        
             	        out.close();
         			}//end else if statement 
         			
@@ -193,6 +161,65 @@ import java.io.IOException;
     		
     	}
 		
+		private void addHtmlHeadStarter(BufferedWriter out)throws IOException{
+			out.write("\t\t<head>\n");
+			out.write("\t\t\t<meta charset=\"utf-8\" />\n");
+			out.write("\t\t\t<title>GraphCreator Results</title>\n");
+			out.write("\t\t\t<script src=\"file:///android_asset/js/jquery.min.js\"></script>\n");
+			out.write("\t\t\t<script src=\"file:///android_asset/js/jquery.flot.min.js\"></script>\n");
+			
+		}
+		
+		private void addFlotJsScriptStarter(BufferedWriter out)throws IOException{
+			out.write("\t\t\t<script type=\"text/javascript\">\n");
+			out.write("\t\t\t$(function () {\n");
+			out.write("\t\t\t\tvar d1 =[");
+			convertDataToJSArray(out);
+			out.write("];\n");
+		}
+		
+		private void addFlotArraytoJsScript(BufferedWriter out)throws IOException{
+			
+			out.write("\t\t\t\tvar data = [\n");
+			out.write("\t\t\t\t\t{\n");
+			out.write("\t\t\t\t\t\tdata: d1\n");
+			out.write("\t\t\t\t\t\t\n");
+			out.write("\t\t\t\t\t}\n");
+			out.write("\t\t\t\t];\n");
+		}
+		
+		private void addFlotOptionstoJsScript(BufferedWriter out, String graphType) throws IOException{
+			if(graphType.equals("bar")){
+				out.write("\t\t\t\tvar options =\n");
+				out.write("\t\t\t\t\t{\n");
+				out.write("\t\t\t\t\t\tbars:\n");
+				out.write("\t\t\t\t\t\t\t{\n");
+				out.write("\t\t\t\t\t\t\t\tshow:true,\n");
+				out.write("\t\t\t\t\t\t\t\talign: 'center',\n");
+				out.write("\t\t\t\t\t\t\t\tbarWidth: 0.3\n");
+				out.write("\t\t\t\t\t\t\t}\n");
+				out.write("\t\t\t\t\t};\n");
+			}
+			else if(graphType.equals("line")){
+				out.write("\t\t\t\tvar options =\n");
+				out.write("\t\t\t\t\t{\n");
+				out.write("\t\t\t\t\t\tlines:\n");
+				out.write("\t\t\t\t\t\t\t{\n");
+				out.write("\t\t\t\t\t\t\t\tshow:true,\n");
+				out.write("\t\t\t\t\t\t\t\tlineWidth: 0.3\n");
+				out.write("\t\t\t\t\t\t\t}\n");
+				out.write("\t\t\t\t\t};\n");
+			}
+			
+		}	
+		
+		private void addFlotJsScriptEnder(BufferedWriter out) throws IOException{
+			out.write("\t\t\t\t$.plot($(\"#placeholder\"), data, options);\n");
+			out.write("\t\t});\n");
+			out.write("\t\t\t</script>\n");
+			out.write("\t\t</head>\n");
+		}
+		
         private void convertDataToJSArray(BufferedWriter out)throws IOException{
             String graphData ="";
             dbcursor.moveToFirst();
@@ -210,4 +237,5 @@ import java.io.IOException;
             Log.d("dataset", graphData);
             dbcursor.close();
         }
+		
     }
