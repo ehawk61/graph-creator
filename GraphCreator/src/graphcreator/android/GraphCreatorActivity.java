@@ -63,7 +63,7 @@ public class GraphCreatorActivity extends Activity {
 			converter.convertCursorToDBData(downloadFileCursor, "table", statusOutputTextView, getApplicationContext());
 		}
 		else{
-			Toast.makeText(getApplicationContext(),"Data not downloaded",Toast.LENGTH_LONG).show();
+			Toast.makeText(getApplicationContext(),"Data Not Downloaded",Toast.LENGTH_LONG).show();
 		}
    	}//end displayText
 	
@@ -77,7 +77,7 @@ public class GraphCreatorActivity extends Activity {
 
 		}
 		else {
-			Toast.makeText(getApplicationContext(),"Data Not found", Toast.LENGTH_LONG).show();
+			Toast.makeText(getApplicationContext(),"Data Not Found", Toast.LENGTH_LONG).show();
 		}
     }//end Add Data method
     
@@ -109,7 +109,7 @@ public class GraphCreatorActivity extends Activity {
 	private void checkUrl(String urlText, View v){
 		if(urlText.equals(""))
     	{
-    		Toast.makeText(getApplicationContext(),"URL is blank", Toast.LENGTH_LONG).show();
+    		Toast.makeText(getApplicationContext(),"URL Is Blank", Toast.LENGTH_LONG).show();
     	}
     	else
     	{
