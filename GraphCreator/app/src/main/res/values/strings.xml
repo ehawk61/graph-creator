@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--  This file is part of GraphCreator.
+
+    GraphCreator is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    GraphCreator is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with GraphCreator.  If not, see <http://www.gnu.org/licenses/>.
+    
+    Copyright (C) 2012-2015 Jonathan L. Meek
+ -->
+<resources>
+    <string name="welcome_text">Welcome to GraphCreator. Select the input source you care to use below</string>
+    <string name="app_name">GraphCreator</string>
+    <string name="action_settings">Settings</string>
+
+    <!-- urllayout.xml -->
+    <string name="urlTitle">URI</string>
+    <string name="buttonText">Download Item</string>
+    <string name="statusTitle">Status Output</string>
+    <string name="createTableSQL">Display Create Table SQL statement</string>
+    <string name="addData">Add Data to Database</string>
+    <string name="graphSetup">Go to Graph Setup</string>
+
+    <!-- datagraph.xml -->
+    <string name="graphType">Graph Type</string>
+    <string name="barGraph">Bar Graph</string>
+    <string name="lineGraph">Line Graph</string>
+    <string name="xDataSet">Data Set(X axis)</string>
+    <string name="yDataSet">Data Set(Y axis)</string>
+    <string name="selectTableSQL">SQL String Representation</string>
+    <string name="generateSQL">Generate SQL String</string>
+    <string name="querySQL">Program Status</string>
+    <string name="querySQLstatus">No Status</string>
+    <string name="dbQuery">Query Database</string>
+    <string name="generateHTML">Generate HTML Code</string>
+    <string name="loadHTML">Load HTML Table</string>
+
+    <!-- inputchoice.xml -->
+    <string name="urlChoice">URL</string>
+    <string name="localFileChoice">Local File</string>
+    <string name="dropboxChoice">Dropbox</string>
+</resources>
