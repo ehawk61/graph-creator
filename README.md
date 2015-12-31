@@ -1,6 +1,8 @@
 [flot]:http://www.flotcharts.org/
 [jQuery]:http://www.http://jquery.com/
 [GPLv3 Quick Guide]: http://www.gnu.org/licenses/quick-guide-gplv3.html
+[icons8]: ic8.link/4997
+[CC BY-ND 3.0]: https://creativecommons.org/licenses/by-nd/3.0/
 
 graph-creator
 =============
@@ -9,11 +11,16 @@ This an Android Application that reads CSV files and creates graphs using the [f
 
 All code is licensed under GPL v3.0 License. To understand it better, go here: [GPLv3 Quick Guide][]
 
+The application icon is "Area Chart Icon" submitted by Paul on the [icons8][] website which is licensed under [CC BY-ND 3.0][]
+
 Release Notes
 =============
 <big><b>0.1</b></big><br />
 &nbsp;&nbsp;&nbsp;&nbsp;--Initial Upload to GitHub
 
+<big><b>0.2</b></big><br />
+&nbsp;&nbsp;&nbsp;&nbsp;--Migrated from legacy Android build system to Gradle (Woot!) <br />
+&nbsp;&nbsp;&nbsp;&nbsp;--Updated icons to use Area Graph icons generated at icons8
 
 To-Do List
 ===========
