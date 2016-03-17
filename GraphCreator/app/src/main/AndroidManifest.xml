@@ -42,6 +42,10 @@
             android:name="com.jmeek.graphcreator.GraphCreatorActivity"
             android:label="GraphCreator">
         </activity>
+		<activity
+			android:name="com.jmeek.graphcreator.LocalFileActivity"
+			android:label="LocalFileActivity">
+		</activity>
     </application>
 
 </manifest>

@@ -37,6 +37,7 @@ Copyright (C) 2012-2015 Jonathan L. Meek
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/localFileChoice"
+		android:onClick = "startFileActivity"
         />
     <Button
         android:layout_width="match_parent"

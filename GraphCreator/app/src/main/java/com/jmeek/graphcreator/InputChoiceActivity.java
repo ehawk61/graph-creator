@@ -23,9 +23,11 @@ import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.content.*;
+import android.net.*;
 
 public class InputChoiceActivity extends AppCompatActivity {
-
+	
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,5 +39,11 @@ public class InputChoiceActivity extends AppCompatActivity {
         Intent intent = new Intent(this, GraphCreatorActivity.class);
         startActivity(intent);
     }
+	
+	public void startFileActivity(View v){
+		Intent fileIntent = new Intent(this, LocalFileActivity.class);
+		startActivity(fileIntent);
+		
+	}
 
 }
