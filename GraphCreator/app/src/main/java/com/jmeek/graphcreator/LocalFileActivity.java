@@ -18,10 +18,10 @@
  */
 package com.jmeek.graphcreator;
 
-import android.app.Activity;
 import android.os.*;
+import android.support.v7.app.AppCompatActivity;
 
-public class LocalFileActivity extends Activity
+public class LocalFileActivity extends AppCompatActivity
 {
 
 	@Override

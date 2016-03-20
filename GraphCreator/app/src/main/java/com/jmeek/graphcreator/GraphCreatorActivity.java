@@ -19,7 +19,6 @@
 
 package com.jmeek.graphcreator;
 
-import android.app.Activity;
 import android.app.DownloadManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -34,8 +33,9 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.support.v7.app.AppCompatActivity;
 
-public class GraphCreatorActivity extends Activity{
+public class GraphCreatorActivity extends AppCompatActivity{
     private CSVConverter converter;
     private DownloadManager downloadHandlerQueue;
     private long latestDownloadId;

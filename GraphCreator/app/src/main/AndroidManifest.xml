@@ -40,11 +40,11 @@
         </activity>
         <activity
             android:name="com.jmeek.graphcreator.GraphCreatorActivity"
-            android:label="GraphCreator">
+            android:label="GraphCreator - Web URL">
         </activity>
 		<activity
 			android:name="com.jmeek.graphcreator.LocalFileActivity"
-			android:label="LocalFileActivity">
+			android:label="GraphCreator - Local File">
 		</activity>
     </application>
 
