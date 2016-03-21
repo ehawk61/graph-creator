@@ -46,4 +46,9 @@
     <string name="urlChoice">URL</string>
     <string name="localFileChoice">Local File</string>
     <string name="dropboxChoice">Dropbox</string>
+	
+	<!-- localfilelayout.xml -->
+	<string name="localFileInstructions">To open a local file, click the button below</string>
+	<string name="localFileButton">Choose File..</string>
+	
 </resources>
