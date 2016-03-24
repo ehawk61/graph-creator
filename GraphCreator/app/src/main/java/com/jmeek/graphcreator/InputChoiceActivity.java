@@ -23,8 +23,6 @@ import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
-import android.content.*;
-import android.net.*;
 
 public class InputChoiceActivity extends AppCompatActivity {
 	
@@ -43,7 +41,11 @@ public class InputChoiceActivity extends AppCompatActivity {
 	public void startFileActivity(View v){
 		Intent fileIntent = new Intent(this, LocalFileActivity.class);
 		startActivity(fileIntent);
-		
+		//Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+		//intent.setType("csv/*");
+		//startActivityForResult(Intent.createChooser(intent, "Test Chooser"), 1);
+		//finish();
 	}
 
+	
 }

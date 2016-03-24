@@ -29,9 +29,11 @@ Copyright (C) 2012-2015 Jonathan L. Meek
         android:textAppearance="?android:attr/textAppearanceMedium"  
 	/>
 	<Button
-        android:layout_width="match_parent"
+        android:id="@+id/localFileButton"
+		android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/localFileButton"
+		android:onClick="fileButtonDialog"
 	/>
     
 </LinearLayout>

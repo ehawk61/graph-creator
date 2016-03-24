@@ -18,8 +18,13 @@
  */
 package com.jmeek.graphcreator;
 
-import android.os.*;
+import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.widget.Button;
+import android.view.View.OnClickListener;
+import android.view.View;
+import android.widget.Toast;
+import android.content.Intent;
 
 public class LocalFileActivity extends AppCompatActivity
 {
@@ -29,6 +34,24 @@ public class LocalFileActivity extends AppCompatActivity
 	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.localurllayout);
+	
 	}
+	
+	public void fileButtonDialog(View p1){
+		Toast.makeText(getApplicationContext(),"Test",Toast.LENGTH_LONG).show();
+		Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+		intent.setType("*/*");
+		startActivityForResult(intent,1);
+		finish();
+	}
+
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data)
+	{
+		super.onActivityResult(requestCode, resultCode, data);
+		Toast.makeText(getApplicationContext(),"Got it!", Toast.LENGTH_LONG).show();
+	}
+
+
 
 }
